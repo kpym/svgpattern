@@ -111,7 +111,7 @@ func GeneratorFromParameters() svgpattern.Generator {
 		}
 	}
 	// set the scale factor
-	if scale != "0" {
+	if scale != "1" {
 		factorstr := strings.Split(scale, "-")
 		if len(factorstr) > 0 {
 			a, _ := strconv.ParseFloat(factorstr[0], 64)

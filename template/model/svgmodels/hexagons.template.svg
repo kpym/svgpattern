@@ -5,8 +5,8 @@
   {{- $th := 17.32 }}
 
   {{- /* number of tiles */ -}}
-  {{- $xn := randi 3 5 }}
-  {{- $yn := pick 4 8 }}
+  {{- $xn := 5 }}
+  {{- $yn := 8 }}
 
   {{- /* pattern parameters */ -}}
   {{- $pw := $xn | times $tw | round 4 }}

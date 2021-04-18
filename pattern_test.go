@@ -79,7 +79,7 @@ func TestPhraseSeed(t *testing.T) {
 	}
 	// template model
 	if g.name != "hexagons" {
-		t.Error("The generator template name shoud be 'hexagons' but it is.", g.name)
+		t.Error("The generator template name shoud be 'hexagons' but it is", g.name)
 	}
 	if g.code == nil {
 		t.Error("The generator template is not set.")
@@ -198,7 +198,7 @@ func TestRandomizeSaturation(t *testing.T) {
 	deltaS := math.Abs(s - ns)
 	deltaL := math.Abs(l - nl)
 	if deltaH > d || deltaS > delta || deltaL > d {
-		t.Errorf("The color is not randomized as desired, delta should be less then (%f,%f,%f), but got: (%f,%f,%f)", delta, d, d, deltaH, deltaS, deltaL)
+		t.Errorf("The color is not randomized as desired, delta should be less then (%f,%f,%f), but got: (%f,%f,%f)", d, delta, d, deltaH, deltaS, deltaL)
 	}
 	// status
 	if !g.colorOk {

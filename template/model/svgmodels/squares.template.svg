@@ -2,7 +2,7 @@
 
   {{- /* tile size */ -}}
   {{- $tw := randi 70 105 }}
-  {{- $th := randi 70 105 }}
+  {{- $th := $tw }}
 
   {{- /* number of tiles */ -}}
   {{- $xn := randi 3 5 }}

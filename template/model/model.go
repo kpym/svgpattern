@@ -2,46 +2,22 @@
 package model
 
 import (
-	_ "embed"
+	"embed"
+	"io/fs"
+	"strings"
 )
 
-//go:embed chevrons.svg
-var Chevrons string
-
-//go:embed  concentric-circles.svg
-var ConcentricCircles string
-
-//go:embed  diamonds.svg
-var Diamonds string
-
-//go:embed  hexagons.svg
-var Hexagons string
-
-//go:embed plaid.svg
-var Plaid string
-
-//go:embed squares.svg
-var Squares string
-
-var Models = []struct{ Name, Code string }{
-	{"chevrons", Chevrons},
-	{"concentric-circles", ConcentricCircles},
-	{"diamonds", Diamonds},
-	{"hexagons", Hexagons},
-	{"plaid", Plaid},
-	{"squares", Squares},
+// Model represent a go-template model with name and svg code.
+type Model struct {
+	Name string
+	Code string
 }
 
-func GetModelCode(name string) (code string, ok bool) {
-	for _, m := range Models {
-		if m.Name == name {
-			return m.Code, true
-		}
-	}
+// Models is the list of all available models.
+var Models []Model
 
-	return "", false
-}
-
+// GetModelIndex provides index in Models list of the desired model.
+// If the model is not found the ok is false and indes is -1
 func GetModelIndex(name string) (index int, ok bool) {
 	for i, m := range Models {
 		if m.Name == name {
@@ -50,4 +26,30 @@ func GetModelIndex(name string) (index int, ok bool) {
 	}
 
 	return -1, false
+}
+
+// SetModel append or replace an existing model.
+func SetModel(name string, code string) {
+	i, ok := GetModelIndex(name)
+	if ok {
+		Models[i].Code = code
+	} else {
+		Models = append(Models, Model{name, code})
+	}
+}
+
+//go:embed svgmodels/*.template.svg
+var files embed.FS
+
+// Init the Models list with the embeded svg templates.
+func init() {
+	svgdir, _ := fs.Sub(files, "svgmodels")
+	svgmodels, _ := fs.ReadDir(svgdir, ".")
+	for _, svgmodfile := range svgmodels {
+		fname := svgmodfile.Name()
+		fdata, _ := fs.ReadFile(svgdir, fname)
+		name := strings.TrimSuffix(fname, ".template.svg")
+		code := string(fdata)
+		SetModel(name, code)
+	}
 }

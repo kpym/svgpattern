@@ -249,7 +249,7 @@ func (g *generator) setOpacity(opacity float64) {
 
 // randomColor generate a random background color.
 func (g *generator) randomColor() {
-	randCol := colorful.Hsl(360*g.rand.Float64(), g.rand.Float64(), g.rand.Float64())
+	randCol := colorful.Hsl(360*g.rand.Float64(), 0.4+0.3*g.rand.Float64(), 0.3+0.4*g.rand.Float64())
 	g.setColor(randCol)
 }
 
