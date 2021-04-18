@@ -1,0 +1,56 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  {{- /* tile size */ -}}
+  {{- $tw := 140 }}
+  {{- $th := 70 }}
+
+  {{- /* number of tiles */ -}}
+  {{- $xn := randi 3 5 }}
+  {{- $yn := randi 3 5 }}
+
+  {{- /* pattern parameters */ -}}
+  {{- $pw := $xn | times $tw }}
+  {{- $ph := $yn | times $th }}
+
+  <defs>
+    <polyline id="tile" stroke="#000" stroke-opacity="0.04" points="-70,0,0,35,70,0,0,-35" />
+    <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
+    {{- if gt .Opacity 0.0 }}
+    <rect fill="{{ .Color }}" width="{{ $pw }}" height="{{ $ph }}" x="0" y="0" {{ if lt .Opacity 1.0 }}fill-opacity="{{ .Opacity }}"{{ end }}/>
+    {{- end }}
+
+    {{- $lx := var "" }}
+    {{- $ly := var "" }}
+    {{- range $x := (upto $xn) }}
+    {{- range $y := (upto $yn) }}
+
+    {{- $fill := pick "#222" "#ddd" }}
+    {{- $opacity := randf 0.03 0.17 | round 2 }}
+    {{- if (eq $x 0) }}
+      {{- list 0 $xn | set $lx }}
+    {{- else }}
+      {{- list $x | set $lx }}
+    {{- end }}
+    {{- if (eq $y 0) }}
+      {{- list 0 $yn | set $ly }}
+    {{- else }}
+      {{- list $y | set $ly }}
+    {{- end }}
+      <!-- lx:{{$lx}} -->
+      <!-- ly:{{$ly}} -->
+      {{- range $rx := $lx }}
+        <!-- rx:{{$rx}} -->
+      {{- range $ry := $ly }}
+          <!-- ry:{{$ry}} -->
+      {{- $dx := $rx | times $tw | round 2 }}
+      {{- $dy := $ry | times $th | round 2 }}
+        <use href="#tile" fill="{{ $fill }}" fill-opacity="{{ $opacity }}" transform="translate({{ $dx }},{{ $dy }})"/>
+      {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    </pattern>
+  </defs>
+
+  <rect height="100%" width="100%" x="0" y="0" fill="url(#pattern)"/>
+</svg>
