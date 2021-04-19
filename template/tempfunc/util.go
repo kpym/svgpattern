@@ -22,6 +22,7 @@ func UtilFunctions() template.FuncMap {
 		"iseven": iseven,
 		"fromto": fromTo,
 		"upto":   upTo,
+		"grid":   gridTo,
 		"var":    newVar,
 		"set":    setVar,
 		"list":   list,
@@ -132,6 +133,24 @@ func upTo(n interface{}) (r []int) {
 	}
 
 	return fromTo(0, num-1)
+}
+
+// gridTo provide a result like [[0 n] [1] ... [n-1]].
+// This is very useful for the pattern construction where
+// the first and the last element should be identical.
+// So we fist draw the elements 0 and n, then 1,2,...,n-1
+func gridTo(num interface{}) (r [][]int) {
+	n := int(toFloat64(num))
+	if n < 1 {
+		n = 1
+	}
+	r = make([][]int, n, n)
+	r[0] = []int{0, n}
+	for i := 1; i < n; i++ {
+		r[i] = []int{i}
+	}
+
+	return r
 }
 
 // newVar defines a new variable that can be modified

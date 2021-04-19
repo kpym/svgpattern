@@ -5,39 +5,39 @@
   {{- $th := 35 }}
 
   {{- /* number of tiles */ -}}
-  {{- $xn := randi 7 11 }}
-  {{- $yn := randi 7 11 }}
+  {{- $nx := randi 7 11 }}
+  {{- $ny := randi 7 11 }}
 
   {{- /* pattern parameters */ -}}
-  {{- $pw := $xn | times $tw }}
-  {{- $ph := $yn | times $th }}
+  {{- $pw := $nx | times $tw }}
+  {{- $ph := $ny | times $th }}
 
   <defs>
     <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
-    {{- if gt .Opacity 0.0 }}
-    <rect fill="{{ .Color }}" width="{{ $pw }}" height="{{ $ph }}" x="0" y="0" {{ if lt .Opacity 1.0 }}fill-opacity="{{ .Opacity }}"{{ end }}/>
+
+    {{- range $x := (upto $nx) }}
+      {{- $rw := randi 14 28 }}
+      {{- $rx := randi 0 7 }}
+      {{- $dx := $x | times $tw | plus $rx }}
+      {{- $fill := pick "#222" "#ddd" }}
+      {{- $opacity := randf 0.01 0.14 | round 2 }}
+      <rect fill="{{ $fill }}" fill-opacity="{{ $opacity }}" width="{{ $rw }}" height="{{ $ph }}" x="{{ $dx }}" y="0"/>
     {{- end }}
 
-    {{- range $x := (upto $xn) }}
-    {{- $rw := randi 14 28 }}
-    {{- $rx := randi 0 7 }}
-    {{- $dx := $x | times $tw | plus $rx }}
-    {{- $fill := pick "#222" "#ddd" }}
-    {{- $opacity := randf 0.01 0.14 | round 2 }}
-    <rect fill="{{ $fill }}" fill-opacity="{{ $opacity }}" width="{{ $rw }}" height="{{ $ph }}" x="{{ $dx }}" y="0"/>
-    {{- end }}
-
-    {{- range $y := (upto $yn) }}
-    {{- $rh := randi 14 28 }}
-    {{- $ry := randi 0 7 }}
-    {{- $dy := $y | times $th | plus $ry }}
-    {{- $fill := pick "#222" "#ddd" }}
-    {{- $opacity := randf 0.01 0.14 | round 2 }}
-    <rect fill="{{ $fill }}" fill-opacity="{{ $opacity }}" width="{{ $pw }}" height="{{ $rh }}" x="0" y="{{ $dy }}"/>
+    {{- range $y := (upto $ny) }}
+      {{- $rh := randi 14 28 }}
+      {{- $ry := randi 0 7 }}
+      {{- $dy := $y | times $th | plus $ry }}
+      {{- $fill := pick "#222" "#ddd" }}
+      {{- $opacity := randf 0.01 0.14 | round 2 }}
+      <rect fill="{{ $fill }}" fill-opacity="{{ $opacity }}" width="{{ $pw }}" height="{{ $rh }}" x="0" y="{{ $dy }}"/>
     {{- end }}
 
     </pattern>
   </defs>
 
-  <rect height="100%" width="100%" x="0" y="0" fill="url(#pattern)"/>
+  {{- if gt .Opacity 0.0 }}
+  <rect fill="{{ .Color }}" height="100%" width="100%" x="0" y="0" {{ if lt .Opacity 1.0 }}fill-opacity="{{ .Opacity }}"{{ end }}/>
+  {{- end }}
+  <rect fill="url(#pattern)" height="100%" width="100%" x="0" y="0"/>
 </svg>

@@ -1,8 +1,8 @@
 <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
   {{- /* tile size */ -}}
-  {{- $tw := 72 }}
-  {{- $th := 72 }}
+  {{- $tw := 70 }}
+  {{- $th := 70 }}
 
   {{- /* number of tiles */ -}}
   {{- $nx := randi 3 5 }}
@@ -12,26 +12,32 @@
   {{- $pw := $nx | times $tw }}
   {{- $ph := $ny | times $th }}
 
-
   <defs>
-    <circle id="tile1" r="28" fill="none" stroke-opacity="0.07" stroke-width="14"/>
-    <circle id="tile2" r="14" />
+    <polyline id="tile1" points="35,0,0,35,-35,0,0,-35,35,0,35-35,-35,-35,-35,35,35,35,35,0"/>
+    <polyline id="tile2" points="35,0,0,35,0,-35,-35,0"/>
+    <polyline id="tile3" points="35,0,0,-35,0,35,-35,0"/>
     <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
 
     {{- range $lx := grid $nx }}
     {{- range $ly := grid $ny }}
 
-      {{- $col1 := pick "#222" "#ddd" }}
-      {{- $col2 := pick "#222" "#ddd" }}
-      {{- $opa1 := randf 0.04 0.17 | round 2 }}
-      {{- $opa2 := randf 0.04 0.17 | round 2 }}
+      {{- $fill1 := pick "#222" "#ddd" }}
+      {{- $fill2 := pick "#222" "#ddd" }}
+      {{- $fill3 := pick "#222" "#ddd" }}
+      {{- $opacity1 := randf 0.01 0.14 | round 2 }}
+      {{- $opacity2 := randf 0.01 0.14 | round 2 }}
+      {{- $opacity3 := randf 0.01 0.14 | round 2 }}
 
       {{- range $x := $lx }}
       {{- range $y := $ly }}
         {{- $dx := $x | times $tw | round 2 }}
         {{- $dy := $y | times $th | round 2 }}
-        <use href="#tile1" stroke="{{ $col1 }}" stroke-opacity="{{ $opa1 }}" transform="translate({{ $dx }},{{ $dy }})"/>
-        <use href="#tile2" fill="{{ $col2 }}" fill-opacity="{{ $opa2 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+        {{- if eq (pick 1 2) 1 }}
+          <use href="#tile1" fill="{{ $fill1 }}" fill-opacity="{{ $opacity1 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+        {{- else }}
+          <use href="#tile2" fill="{{ $fill2 }}" fill-opacity="{{ $opacity2 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+          <use href="#tile3" fill="{{ $fill3 }}" fill-opacity="{{ $opacity3 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+        {{- end }}
       {{- end }}
       {{- end }}
 

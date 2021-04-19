@@ -78,8 +78,8 @@ func TestPhraseSeed(t *testing.T) {
 		t.Error("The random generator should be set.")
 	}
 	// template model
-	if g.name != "hexagons" {
-		t.Error("The generator template name shoud be 'hexagons' but it is", g.name)
+	if g.name == "" {
+		t.Error("The generator template name shoud be non empty")
 	}
 	if g.code == nil {
 		t.Error("The generator template is not set.")

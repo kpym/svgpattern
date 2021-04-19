@@ -51,6 +51,24 @@ func TestFromTo(t *testing.T) {
 	}
 }
 
+func TestGridTo(t *testing.T) {
+	data := []struct {
+		n   int
+		out string
+		msg string
+	}{
+		{2, "[[0 2] [1]]", "problem with gridTo(2)"},
+		{5, "[[0 5] [1] [2] [3] [4]]", "problem with gridTo(5)"},
+		{-1, "[[0 1]]", "problem with gridTo(-1)"},
+	}
+	for _, tt := range data {
+		res := fmt.Sprintf("%v", gridTo(tt.n))
+		if res != tt.out {
+			t.Errorf(tt.msg+" got %s, want %s", res, tt.out)
+		}
+	}
+}
+
 // The functions `number` and `float` are the same.
 func ExampleUtilFunctions_number() {
 	const hello string = `Hello, {{ "1.2e3" | number }} and {{ "not a number" | number }} !`

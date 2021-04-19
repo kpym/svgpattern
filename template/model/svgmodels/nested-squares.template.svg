@@ -2,32 +2,36 @@
 
   {{- /* tile size */ -}}
   {{- $tw := 90 }}
-  {{- $th := 25.98 }}
+  {{- $th := 90 }}
 
   {{- /* number of tiles */ -}}
-  {{- $nx := 5 }}
-  {{- $ny := 8 }}
+  {{- $nx := pick 4 5 }}
+  {{- $ny := pick 4 5 }}
 
   {{- /* pattern parameters */ -}}
-  {{- $pw := $nx | times $tw | round 4 }}
-  {{- $ph := $ny | times $th | round 4 }}
+  {{- $pw := $nx | times $tw }}
+  {{- $ph := $ny | times $th }}
 
   <defs>
-    <polyline id="tile" stroke="#000" stroke-opacity="0.04" points="30,0,15,25.98,-15,25.98,-30,0,-15,-25.98,15,-25.98" />
+    <rect id="tile1" fill="none" stroke-width="10" x="-35" y="-35" width="{{ 70 }}" height="{{ 70 }}"/>
+    <rect id="tile2" fill="none" stroke-width="10" x="-15" y="-15" width="{{ 30 }}" height="{{ 30 }}"/>
     <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
 
     {{- range $lx := grid $nx }}
     {{- range $ly := grid $ny }}
 
-      {{- $stroke := pick "#222" "#ddd" }}
-      {{- $fill := pick "#222" "#ddd" }}
-      {{- $opacity := randf 0.01 0.14 | round 2 }}
+      {{- $coin := pick 0 1 }}
+      {{- $fill1 := or (and $coin "#222") "#ddd" }}
+      {{- $fill2 := or (and $coin "#ddd") "#222" }}
+      {{- $opacity1 := randf 0.07 0.14 | round 2 }}
+      {{- $opacity2  := randf 0.07 0.14 | round 2 }}
 
       {{- range $x := $lx }}
       {{- range $y := $ly }}
         {{- $dx := $x | times $tw | round 2 }}
         {{- $dy := $y | times $th | round 2 }}
-        <use href="#tile" fill="{{ $fill }}" fill-opacity="{{ $opacity }}" transform="translate({{ $dx }},{{ $dy }}) {{ if isodd $y }}translate(45,0){{ end }}"/>
+        <use href="#tile1" stroke="{{ $fill1 }}" stroke-opacity="{{ $opacity1 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+        <use href="#tile2" stroke="{{ $fill2 }}" stroke-opacity="{{ $opacity2 }}" transform="translate({{ $dx }},{{ $dy }})"/>
       {{- end }}
       {{- end }}
 
