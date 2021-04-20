@@ -259,7 +259,7 @@ func (g *generator) randomColor() {
 	g.setColor(randCol)
 }
 
-// Set the background color.
+// WithColor sets the background color.
 // If the color is not valid a random one is chosen.
 func WithColor(hex string) Option {
 	color, err := colorful.Hex(hex)
@@ -329,7 +329,7 @@ func RandomizeLightness(delta float64) Option {
 	}
 }
 
-// RandomizeLightness is a Generator option that remove the background color.
+// WithoutColor is a Generator option that remove the background color.
 // If this option is used only the patterns are present, without a background.
 // Using this option allows to stack the svg pattern on top of a gradient or image.
 func WithoutColor() Option {
@@ -345,7 +345,7 @@ func WithRotation(angle float64) Option {
 	}
 }
 
-// WithRotation is a Generator option that provide an interval [min, max]
+// WithRotationBetween is a Generator option that provide an interval [min, max]
 // in witch the rotation angle of the patter should be randomly chosen.
 func WithRotationBetween(min, max float64) Option {
 	mid := (max + min) / 2

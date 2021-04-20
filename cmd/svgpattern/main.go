@@ -24,7 +24,8 @@ func help() {
 	fmt.Fprintf(out, "\n")
 }
 
-func GeneratorFromParameters() svgpattern.Generator {
+// generatorFromParameters provides a new Generator using the CLI parameters.
+func generatorFromParameters() svgpattern.Generator {
 	// The parameter global variables
 	var (
 		color      string
@@ -133,7 +134,7 @@ func log(format string, a ...interface{}) (n int, err error) {
 
 // Prints pattern's SVG string with a specific background color
 func main() {
-	g := GeneratorFromParameters()
+	g := generatorFromParameters()
 	svg, ok := g.Generate()
 	if !ok {
 		log("There are some errors : %v", g.Errors())
