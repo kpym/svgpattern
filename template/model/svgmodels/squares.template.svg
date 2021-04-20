@@ -19,15 +19,14 @@
     {{- range $lx := grid $nx }}
     {{- range $ly := grid $ny }}
 
-      {{- $fill := pick "#222" "#ddd" }}
-      {{- $opacity := randf 0.01 0.14 | round 2 }}
-
+      {{- $col := pick "#222" "#ddd" }}
+      {{- $opa := randf 0.01 0.14 | round 2 }}
 
       {{- range $x := $lx }}
       {{- range $y := $ly }}
         {{- $dx := $x | times $tw | round 2 }}
         {{- $dy := $y | times $th | round 2 }}
-        <use href="#tile" fill="{{ $fill }}" fill-opacity="{{ $opacity }}" transform="translate({{ $dx }},{{ $dy }})"/>
+        <use href="#tile" fill="{{ $col }}" fill-opacity="{{ $opa }}" transform="translate({{ $dx }},{{ $dy }})"/>
       {{- end }}
       {{- end }}
 

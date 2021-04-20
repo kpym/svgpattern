@@ -1,0 +1,49 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  {{- /* tile size */ -}}
+  {{- $tw := 94.64 }}
+  {{- $th := 54.64 }}
+
+  {{- /* number of tiles */ -}}
+  {{- $nx := 4 }}
+  {{- $ny := 4 }}
+
+  {{- /* pattern parameters */ -}}
+  {{- $pw := $nx | times $tw | round 4 }}
+  {{- $ph := $ny | times $th | round 4 }}
+
+  <defs>
+    <path id="ring" d="M37.3205 0 27.3205 17.3205 10 27.3205-10 27.3205-27.3205 17.3205-37.3205 0-37.3205-20-27.3205-37.3205-10-47.3205 10-47.3205 27.3205-37.3205 37.3205-20ZM20-10 10-27.3205-10-27.3205-20-10-10 7.3205 10 7.3205Z"/>
+    <g id="tile" stroke="#000" stroke-opacity="0.04" >
+    {{- range $dx := list 0 $pw }}
+    {{- range $dy := list 0 $ph }}
+      <use href="#ring" transform="translate({{ $dx }},{{ $dy }})"/>
+    {{- end }}
+    {{- end }}
+    </g>
+    <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
+
+    {{- range $x := upto $nx }}
+    {{- range $y := upto $ny }}
+
+      {{- $col1 := pick "#222" "#ddd" }}
+      {{- $col2 := pick "#222" "#ddd" }}
+      {{- $opa1 := randf 0.01 0.14 | round 2 }}
+      {{- $opa2 := randf 0.01 0.14 | round 2 }}
+
+      {{- $dx := $x | times $tw | round 2 }}
+      {{- $dy := $y | times $th | round 2 }}
+      <g transform="translate({{ $dx }},{{ $dy }})">
+        <use href="#tile" fill="{{ $col1 }}" fill-opacity="{{ $opa1 }}"/>
+        <use href="#tile" fill="{{ $col2 }}" fill-opacity="{{ $opa2 }}" transform="translate(47.32,27.32)"/>
+      </g>
+    {{- end }}
+    {{- end }}
+    </pattern>
+  </defs>
+
+  {{- if gt .Opacity 0.0 }}
+  <rect fill="{{ .Color }}" height="100%" width="100%" x="0" y="0" {{ if lt .Opacity 1.0 }}fill-opacity="{{ .Opacity }}"{{ end }}/>
+  {{- end }}
+  <rect fill="url(#pattern)" height="100%" width="100%" x="0" y="0"/>
+</svg>

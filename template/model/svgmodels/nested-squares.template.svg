@@ -21,17 +21,17 @@
     {{- range $ly := grid $ny }}
 
       {{- $coin := pick 0 1 }}
-      {{- $fill1 := or (and $coin "#222") "#ddd" }}
-      {{- $fill2 := or (and $coin "#ddd") "#222" }}
-      {{- $opacity1 := randf 0.07 0.14 | round 2 }}
-      {{- $opacity2  := randf 0.07 0.14 | round 2 }}
+      {{- $col1 := or (and $coin "#222") "#ddd" }}
+      {{- $col2 := or (and $coin "#ddd") "#222" }}
+      {{- $opa1 := randf 0.07 0.14 | round 2 }}
+      {{- $opa2  := randf 0.07 0.14 | round 2 }}
 
       {{- range $x := $lx }}
       {{- range $y := $ly }}
         {{- $dx := $x | times $tw | round 2 }}
         {{- $dy := $y | times $th | round 2 }}
-        <use href="#tile1" stroke="{{ $fill1 }}" stroke-opacity="{{ $opacity1 }}" transform="translate({{ $dx }},{{ $dy }})"/>
-        <use href="#tile2" stroke="{{ $fill2 }}" stroke-opacity="{{ $opacity2 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+        <use href="#tile1" stroke="{{ $col1 }}" stroke-opacity="{{ $opa1 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+        <use href="#tile2" stroke="{{ $col2 }}" stroke-opacity="{{ $opa2 }}" transform="translate({{ $dx }},{{ $dy }})"/>
       {{- end }}
       {{- end }}
 

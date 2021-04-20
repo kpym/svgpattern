@@ -1,0 +1,43 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  {{- /* tile size */ -}}
+  {{- $tw := 140 }}
+  {{- $th := 21 }}
+
+  {{- /* number of tiles */ -}}
+  {{- $nx := 1 }}
+  {{- $ny := randi 7 11 }}
+
+  {{- /* pattern parameters */ -}}
+  {{- $pw := $nx | times $tw }}
+  {{- $ph := $ny | times $th }}
+  <defs>
+    <g fill="none" stroke-width="{{ $th }}" stroke-linecap="square">
+    {{- range $w := list 1 2 3 }}
+      <path id="wave{{ $w }}" d="M0 0 C 70 {{ $w | times 20 | plus 10 }} 70 -{{ $w | times 20 | plus 10 }} 140 0" />
+    {{- end }}
+    </g>
+    {{- range $t := list 1 2 3 }}
+    <g id="tile{{$t}}" fill="none" stroke-width="{{ $th }}" stroke-linecap="square" >
+      {{- range $dy := list ($ph | times -1) 0 $ph }}
+      <use href="#wave{{$t}}" transform="translate(0,{{ $dy }})"/>
+      {{- end }}
+    </g>
+    {{- end }}
+    <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
+
+    {{- range $y := (upto $ny) }}
+      {{- $dy := $y | times $th }}
+      {{- $col := pick "#222" "#ddd" }}
+      {{- $opa := randf 0.03 0.14 | round 2 }}
+      {{- $t := pick 1 2 3 }}
+      <use href="#tile{{ $t }}" stroke="{{ $col }}" stroke-opacity="{{ $opa }}" transform="translate(0,{{ $dy }})"/>
+    {{- end }}
+    </pattern>
+  </defs>
+
+  {{- if gt .Opacity 0.0 }}
+  <rect fill="{{ .Color }}" height="100%" width="100%" x="0" y="0" {{ if lt .Opacity 1.0 }}fill-opacity="{{ .Opacity }}"{{ end }}/>
+  {{- end }}
+  <rect fill="url(#pattern)" height="100%" width="100%" x="0" y="0"/>
+</svg>

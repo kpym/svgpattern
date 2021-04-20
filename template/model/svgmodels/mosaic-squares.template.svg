@@ -21,22 +21,22 @@
     {{- range $lx := grid $nx }}
     {{- range $ly := grid $ny }}
 
-      {{- $fill1 := pick "#222" "#ddd" }}
-      {{- $fill2 := pick "#222" "#ddd" }}
-      {{- $fill3 := pick "#222" "#ddd" }}
-      {{- $opacity1 := randf 0.01 0.14 | round 2 }}
-      {{- $opacity2 := randf 0.01 0.14 | round 2 }}
-      {{- $opacity3 := randf 0.01 0.14 | round 2 }}
+      {{- $col1 := pick "#222" "#ddd" }}
+      {{- $col2 := pick "#222" "#ddd" }}
+      {{- $col3 := pick "#222" "#ddd" }}
+      {{- $opa1 := randf 0.01 0.14 | round 2 }}
+      {{- $opa2 := randf 0.01 0.14 | round 2 }}
+      {{- $opa3 := randf 0.01 0.14 | round 2 }}
 
       {{- range $x := $lx }}
       {{- range $y := $ly }}
         {{- $dx := $x | times $tw | round 2 }}
         {{- $dy := $y | times $th | round 2 }}
         {{- if eq (pick 1 2) 1 }}
-          <use href="#tile1" fill="{{ $fill1 }}" fill-opacity="{{ $opacity1 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+          <use href="#tile1" fill="{{ $col1 }}" fill-opacity="{{ $opa1 }}" transform="translate({{ $dx }},{{ $dy }})"/>
         {{- else }}
-          <use href="#tile2" fill="{{ $fill2 }}" fill-opacity="{{ $opacity2 }}" transform="translate({{ $dx }},{{ $dy }})"/>
-          <use href="#tile3" fill="{{ $fill3 }}" fill-opacity="{{ $opacity3 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+          <use href="#tile2" fill="{{ $col2 }}" fill-opacity="{{ $opa2 }}" transform="translate({{ $dx }},{{ $dy }})"/>
+          <use href="#tile3" fill="{{ $col3 }}" fill-opacity="{{ $opa3 }}" transform="translate({{ $dx }},{{ $dy }})"/>
         {{- end }}
       {{- end }}
       {{- end }}

@@ -91,6 +91,10 @@ func (g *generator) Generate() (svg []byte, ok bool) {
 		g.scale,
 	}
 
+	if !g.templateOk {
+		g.addError("Can't generate the pattern: no svg model selected.")
+		return nil, false
+	}
 	err := g.code.Execute(&result, data)
 	if err != nil {
 		g.addError("Error executing the template " + g.name)
@@ -184,7 +188,9 @@ func (g *generator) setModel(index int) {
 	code, err := template.New(g.name).Funcs(rf).Funcs(uf).Parse(m.Code)
 	if err != nil {
 		g.addError("Error parsing template " + g.name + ": " + err.Error())
+		return
 	}
+
 	g.code = code
 	g.templateOk = true
 }
@@ -196,7 +202,7 @@ func (g *generator) randomModel() {
 
 // WithModel is a Generator option that select the model
 // from the list of 'valid' models.
-// If only one valid model name is provided it is used.
+// If only one valid model name is provided, it is used.
 // If no such model is provided, then a random one is
 // chosen among all models.
 func WithModel(models ...string) Option {
@@ -249,7 +255,7 @@ func (g *generator) setOpacity(opacity float64) {
 
 // randomColor generate a random background color.
 func (g *generator) randomColor() {
-	randCol := colorful.Hsl(360*g.rand.Float64(), 0.4+0.3*g.rand.Float64(), 0.3+0.4*g.rand.Float64())
+	randCol := colorful.Hsl(360*g.rand.Float64(), 0.4+0.3*g.rand.Float64(), 0.4+0.1*g.rand.Float64())
 	g.setColor(randCol)
 }
 

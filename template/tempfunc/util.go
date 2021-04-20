@@ -17,6 +17,7 @@ func UtilFunctions() template.FuncMap {
 		"number": toFloat64,
 		"times":  times,
 		"plus":   plus,
+		"minus":  minus,
 		"round":  round,
 		"isodd":  isodd,
 		"iseven": iseven,
@@ -69,6 +70,11 @@ func times(a, b interface{}) float64 {
 // plus adds the two parameters.
 func plus(a, b interface{}) float64 {
 	return toFloat64(a) + toFloat64(b)
+}
+
+// plus subtract a from b.
+func minus(a, b interface{}) float64 {
+	return toFloat64(b) - toFloat64(a)
 }
 
 // round prints the f parameter with the provided precision.

@@ -1,38 +1,40 @@
 <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
   {{- /* tile size */ -}}
-  {{- $tw := 35 }}
-  {{- $th := 35 }}
+  {{- $tw := 80 }}
+  {{- $th := 80 }}
 
   {{- /* number of tiles */ -}}
-  {{- $nx := randi 7 11 }}
-  {{- $ny := randi 7 11 }}
+  {{- $nx := randi 3 5 }}
+  {{- $ny := randi 3 5 }}
 
   {{- /* pattern parameters */ -}}
   {{- $pw := $nx | times $tw }}
   {{- $ph := $ny | times $th }}
 
   <defs>
+    <g id="tile" stroke="#000" stroke-opacity="0.17">
+      <rect width="120" height="40" x="-40" y="0"/>
+      <rect width="40" height="120" x="0" y="-40"/>
+    </g>
     <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
 
-    {{- range $x := (upto $nx) }}
-      {{- $rw := randi 14 28 }}
-      {{- $rx := randi 0 7 }}
-      {{- $dx := $x | times $tw | plus $rx }}
-      {{- $col := pick "#222" "#ddd" }}
-      {{- $opa := randf 0.01 0.14 | round 2 }}
-      <rect fill="{{ $col }}" fill-opacity="{{ $opa }}" width="{{ $rw }}" height="{{ $ph }}" x="{{ $dx }}" y="0"/>
-    {{- end }}
+    {{- range $lx := grid $nx }}
+    {{- range $ly := grid $ny }}
 
-    {{- range $y := (upto $ny) }}
-      {{- $rh := randi 14 28 }}
-      {{- $ry := randi 0 7 }}
-      {{- $dy := $y | times $th | plus $ry }}
       {{- $col := pick "#222" "#ddd" }}
-      {{- $opa := randf 0.01 0.14 | round 2 }}
-      <rect fill="{{ $col }}" fill-opacity="{{ $opa }}" width="{{ $pw }}" height="{{ $rh }}" x="0" y="{{ $dy }}"/>
-    {{- end }}
+      {{- $opa := randf 0.02 0.14 | round 2 }}
 
+      {{- range $x := $lx }}
+      {{- range $y := $ly }}
+        {{- $dx := $x | times $tw | round 2 }}
+        {{- $dy := $y | times $th | round 2 }}
+        <use href="#tile" fill="{{ $col }}" fill-opacity="{{ $opa }}" transform="translate({{ $dx }},{{ $dy }})"/>
+      {{- end }}
+      {{- end }}
+
+    {{- end }}
+    {{- end }}
     </pattern>
   </defs>
 
