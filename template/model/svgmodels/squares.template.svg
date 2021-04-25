@@ -1,12 +1,12 @@
 <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
   {{- /* tile size */ -}}
-  {{- $tw := randi 70 105 }}
+  {{- $tw := randi 21 35 }}
   {{- $th := $tw }}
 
   {{- /* number of tiles */ -}}
-  {{- $nx := randi 3 5 }}
-  {{- $ny := randi 3 5 }}
+  {{- $nx := pick 5 7 }}
+  {{- $ny := pick 5 7 }}
 
   {{- /* pattern parameters */ -}}
   {{- $pw := $nx | times $tw }}

@@ -1,8 +1,8 @@
 <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
   {{- /* tile size */ -}}
-  {{- $tw := 140 }}
-  {{- $th := 70 }}
+  {{- $tw := 100 }}
+  {{- $th := 50 }}
 
   {{- /* number of tiles */ -}}
   {{- $nx := randi 3 5 }}
@@ -13,7 +13,7 @@
   {{- $ph := $ny | times $th }}
 
   <defs>
-    <polyline id="tile" stroke="#000" stroke-opacity="0.04" points="-70,0,0,35,70,0,0,-35" />
+    <polyline id="tile" stroke="#000" stroke-opacity="0.04" points="-50,0,0,25,50,0,0,-25" />
     <pattern  id="pattern" patternTransform="rotate({{ .Rotate | round 2 }}) scale({{ .Scale | round 2 }})" x="0" y="0" width="{{ $pw }}" height="{{ $ph }}" patternUnits="userSpaceOnUse">
 
     {{- range $lx := grid $nx }}
