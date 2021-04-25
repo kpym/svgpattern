@@ -47,13 +47,11 @@ type generator struct {
 	seed   int64
 	rand   *rand.Rand
 	// template model
-	name       string
-	code       *template.Template
-	templateOk bool
+	name string
+	code *template.Template
 	// template parameters
 	color   colorful.Color
 	opacity float64
-	colorOk bool
 	rotate  float64
 	scale   float64
 	// status
@@ -91,14 +89,15 @@ func (g *generator) Generate() (svg []byte, ok bool) {
 		g.scale,
 	}
 
-	if !g.templateOk {
-		g.addError("Can't generate the pattern: no svg model selected.")
+	if g.name == "" || g.code == nil {
+		g.addError("Missing template.")
 		return nil, false
 	}
 	err := g.code.Execute(&result, data)
 	if err != nil {
 		g.addError("Error executing the template " + g.name)
 		g.addError(err.Error())
+		return nil, false
 	}
 
 	return result.Bytes(), len(g.errors) == 0
@@ -116,19 +115,15 @@ func (g *generator) Options(options ...Option) {
 
 // New initialize a new Generator from the provided phrase and options.
 func New(phrase string, options ...Option) Generator {
+	// create the pattern generator
 	g := new(generator)
+	// init the pattern generator
 	g.phraseSeed(phrase)
 	g.scale = 1
-
+	g.randomColor()
+	g.randomModel()
+	// apply the provided options
 	g.Options(options...)
-
-	if !g.templateOk {
-		g.randomModel()
-	}
-
-	if !g.colorOk {
-		g.randomColor()
-	}
 
 	return g
 }
@@ -182,17 +177,16 @@ func (g *generator) phraseSeed(phrase string) {
 // This function is the main relation with the packages model and tempfunc.
 func (g *generator) setModel(index int) {
 	m := model.Models[index]
-	g.name = m.Name
 	rf := tempfunc.RandomFunctions(g.seed)
 	uf := tempfunc.UtilFunctions()
-	code, err := template.New(g.name).Funcs(rf).Funcs(uf).Parse(m.Code)
+	code, err := template.New(m.Name).Funcs(rf).Funcs(uf).Parse(m.Code)
 	if err != nil {
-		g.addError("Error parsing template " + g.name + ": " + err.Error())
+		g.addError("Error parsing template " + m.Name + ": " + err.Error())
 		return
 	}
 
+	g.name = m.Name
 	g.code = code
-	g.templateOk = true
 }
 
 // randomModel pick a random model from all available models.
@@ -243,19 +237,17 @@ func WithModel(models ...string) Option {
 func (g *generator) setColor(color colorful.Color) {
 	g.color = color
 	g.opacity = 1
-	g.colorOk = true
 }
 
 // setOpacity set the background opacity.
 // Actually only 0 and 1 can be provided from the public interface.
 func (g *generator) setOpacity(opacity float64) {
 	g.opacity = opacity
-	g.colorOk = true
 }
 
 // randomColor generate a random background color.
 func (g *generator) randomColor() {
-	randCol := colorful.Hsl(360*g.rand.Float64(), 0.4+0.3*g.rand.Float64(), 0.4+0.1*g.rand.Float64())
+	randCol := colorful.Hsl(360*g.rand.Float64(), 0.3+0.1*g.rand.Float64(), 0.3+0.1*g.rand.Float64())
 	g.setColor(randCol)
 }
 
@@ -281,19 +273,33 @@ func (g *generator) rd(delta float64) float64 {
 	return delta * (1 - 2*g.rand.Float64())
 }
 
+// WithHue set the color hue of the HSL representation.
+func WithHue(hue float64) Option {
+	// no need to normalize hue, it is defined mod 360.
+	return func(g *generator) {
+		_, s, l := g.color.Hsl()
+		g.color = colorful.Hsl(hue, s, l)
+	}
+}
+
 // RandomizeHue is a Generator option that randomize the color hue (of the HSL representation).
 // The (absolute value of) delta parameter is the maximal deviation in degree of the already provided color.
 // This option should be used after WithColor.
 func RandomizeHue(delta float64) Option {
 	return func(g *generator) {
-		if !g.colorOk {
-			g.addError("Can't randomize hue before to set color.")
-			return
-		}
-		h, c, l := g.color.Hsl()
+		h, s, l := g.color.Hsl()
 		rh := h + g.rd(delta)
 		// no need to normalize rh, it is defined mod 360.
-		g.color = colorful.Hsl(rh, c, l)
+		g.color = colorful.Hsl(rh, s, l)
+	}
+}
+
+// WithSaturation set the color saturation of the HSL representation.
+func WithSaturation(sat float64) Option {
+	sat = math.Min(math.Max(sat, 0), 1)
+	return func(g *generator) {
+		h, _, l := g.color.Hsl()
+		g.color = colorful.Hsl(h, sat, l)
 	}
 }
 
@@ -302,14 +308,19 @@ func RandomizeHue(delta float64) Option {
 // This option should be used after WithColor.
 func RandomizeSaturation(delta float64) Option {
 	return func(g *generator) {
-		if !g.colorOk {
-			g.addError("Can't randomize saturation before to set color.")
-			return
-		}
 		h, s, l := g.color.Hsl()
 		rs := s + g.rd(delta)
 		rs = math.Min(math.Max(rs, 0), 1)
 		g.color = colorful.Hsl(h, rs, l)
+	}
+}
+
+// WithLightness set the color lightness of the HSL representation.
+func WithLightness(light float64) Option {
+	light = math.Min(math.Max(light, 0), 1)
+	return func(g *generator) {
+		h, s, _ := g.color.Hsl()
+		g.color = colorful.Hsl(h, s, light)
 	}
 }
 
@@ -318,10 +329,6 @@ func RandomizeSaturation(delta float64) Option {
 // This option should be used after WithColor.
 func RandomizeLightness(delta float64) Option {
 	return func(g *generator) {
-		if !g.colorOk {
-			g.addError("Can't randomize lightness before to set color.")
-			return
-		}
 		h, s, l := g.color.Hsl()
 		rl := l + g.rd(delta)
 		rl = math.Min(math.Max(rl, 0), 1)
@@ -345,6 +352,13 @@ func WithRotation(angle float64) Option {
 	}
 }
 
+// RandomizeRotation is a Generator option that randomize the rotation angle.
+func RandomizeRotation(delta float64) Option {
+	return func(g *generator) {
+		g.rotate += g.rd(delta)
+	}
+}
+
 // WithRotationBetween is a Generator option that provide an interval [min, max]
 // in witch the rotation angle of the patter should be randomly chosen.
 func WithRotationBetween(min, max float64) Option {
@@ -359,6 +373,13 @@ func WithRotationBetween(min, max float64) Option {
 func WithScale(factor float64) Option {
 	return func(g *generator) {
 		g.scale = factor
+	}
+}
+
+// RandomizeScale is a Generator option that randomize the scale factor.
+func RandomizeScale(delta float64) Option {
+	return func(g *generator) {
+		g.scale += g.rd(delta)
 	}
 }
 

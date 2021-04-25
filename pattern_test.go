@@ -25,9 +25,6 @@ func TestDefalutNew(t *testing.T) {
 	if g.code == nil {
 		t.Error("The generator template is not set.")
 	}
-	if !g.templateOk {
-		t.Error("The templateOk is false.")
-	}
 	// template parameters
 	colorCheck := (g.color.R > 1 || g.color.R < 0 ||
 		g.color.G > 1 || g.color.G < 0 ||
@@ -37,9 +34,6 @@ func TestDefalutNew(t *testing.T) {
 	}
 	if g.opacity != 1 {
 		t.Errorf("The default opacity should be 1, but it is %v.", g.opacity)
-	}
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
 	}
 	if g.rotate != 0 {
 		t.Errorf("The default rotate should be 0, but it is %v.", g.rotate)
@@ -84,9 +78,6 @@ func TestPhraseSeed(t *testing.T) {
 	if g.code == nil {
 		t.Error("The generator template is not set.")
 	}
-	if !g.templateOk {
-		t.Error("The templateOk is false.")
-	}
 	// template parameters
 	colorCheck := (g.color.R > 1 || g.color.R < 0 ||
 		g.color.G > 1 || g.color.G < 0 ||
@@ -96,9 +87,6 @@ func TestPhraseSeed(t *testing.T) {
 	}
 	if g.opacity != 1 {
 		t.Errorf("The default opacity should be 1, but it is %v.", g.opacity)
-	}
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
 	}
 	if g.rotate != 0 {
 		t.Errorf("The default rotate should be 0, but it is %v.", g.rotate)
@@ -139,9 +127,6 @@ func TestWithColor(t *testing.T) {
 		t.Errorf("The color is not set as desired, want: %s, got: %s", color, got)
 	}
 	// status
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
-	}
 	if len(g.errors) > 0 {
 		t.Error("There are errors in the default generator.", g.errors)
 	}
@@ -179,9 +164,6 @@ func TestRandomizeHue(t *testing.T) {
 		t.Errorf("The color is not randomized as desired, delta should be less then (%f,%f,%f), but got: (%f,%f,%f)", delta, d, d, deltaH, deltaS, deltaL)
 	}
 	// status
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
-	}
 	if len(g.errors) > 0 {
 		t.Error("There are errors in the default generator.", g.errors)
 	}
@@ -201,9 +183,6 @@ func TestRandomizeSaturation(t *testing.T) {
 		t.Errorf("The color is not randomized as desired, delta should be less then (%f,%f,%f), but got: (%f,%f,%f)", d, delta, d, deltaH, deltaS, deltaL)
 	}
 	// status
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
-	}
 	if len(g.errors) > 0 {
 		t.Error("There are errors in the default generator.", g.errors)
 	}
@@ -223,9 +202,6 @@ func TestRandomizeLightness(t *testing.T) {
 		t.Errorf("The color is not randomized as desired, delta should be less then (%f,%f,%f), but got: (%f,%f,%f)", delta, d, d, deltaH, deltaS, deltaL)
 	}
 	// status
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
-	}
 	if len(g.errors) > 0 {
 		t.Error("There are errors in the default generator.", g.errors)
 	}
@@ -237,9 +213,6 @@ func TestWithoutColor(t *testing.T) {
 		t.Errorf("The color is not transparent as desired, got opacity: %f", g.opacity)
 	}
 	// status
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
-	}
 	if len(g.errors) > 0 {
 		t.Error("There are errors in the default generator.", g.errors)
 	}
@@ -253,9 +226,6 @@ func TestWithoutColor(t *testing.T) {
 		t.Errorf("The color is not transparent as desired, got opacity: %f", g.opacity)
 	}
 	// status
-	if !g.colorOk {
-		t.Error("The colorOk is false.")
-	}
 	if len(g.errors) > 0 {
 		t.Error("There are errors in the default generator.", g.errors)
 	}
