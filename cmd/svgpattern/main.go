@@ -25,13 +25,18 @@ func help() {
 	fmt.Fprintf(out, "\n")
 }
 
-// parse values
+// parseValues provide mean value and deviation from string
+// "v~d" → v,d,true
+// "v" → v,0,true
+// "~d" → NaN,d,true
+// "m:n" → (m+n)/2,|m-n|/2,true
+// else → NaN,NaN,false
 func parseValues(s string) (v, d float64, ok bool) {
 	var (
 		splt []string
 		err  error
 	)
-	// if the string contains ~
+	// if the string contains '~'
 	splt = strings.Split(s, "~")
 	if len(splt) > 1 {
 		vstr := strings.TrimSpace(splt[0])
@@ -49,7 +54,7 @@ func parseValues(s string) (v, d float64, ok bool) {
 		}
 		return v, d, true
 	}
-	// if the string contains :
+	// if the string contains ':'
 	splt = strings.Split(s, ":")
 	if len(splt) > 1 {
 		min, err := strconv.ParseFloat(strings.TrimSpace(splt[0]), 10)
@@ -71,6 +76,22 @@ func parseValues(s string) (v, d float64, ok bool) {
 	return v, 0, true
 }
 
+// getOptions provide set/randomize options based on the strval paramater
+// this function is to transform the values of the flags : u, a, l, r, s
+func getOptions(strval string, with, rand func(float64) svgpattern.Option) (o []svgpattern.Option, ok bool) {
+	val, dev, ok := parseValues(strval)
+	if !ok {
+		return nil, false
+	}
+	if !math.IsNaN(val) {
+		o = append(o, with(val))
+	}
+	if !math.IsNaN(dev) && dev != 0 {
+		o = append(o, rand(dev))
+	}
+	return
+}
+
 // generatorFromParameters provides a new Generator using the CLI parameters.
 func generatorFromParameters() svgpattern.Generator {
 	// The parameter global variables
@@ -88,11 +109,11 @@ func generatorFromParameters() svgpattern.Generator {
 	flag.Usage = help
 	flag.CommandLine.SortFlags = false
 	// declare the flags
+	flag.StringVarP(&model, "model", "m", "", "The pattern model. If multiple choices separate by comma.")
 	flag.StringVarP(&color, "color", "c", "", "The background color in hex, like '#a17', or 'no' for transparent background.")
 	flag.StringVarP(&hue, "hue", "u", "", "The hue variation in degree (using HSL colors). Value format is '[value][~deviation]' or 'min:max'.")
 	flag.StringVarP(&saturation, "saturation", "a", "", "The saturation variation (using HSL colors). Value format is '[value][~deviation]' or 'min:max'.")
 	flag.StringVarP(&lightness, "lightness", "l", "", "The lightness variation (using HSL colors). Value format is '[value][~deviation]' or 'min:max'.")
-	flag.StringVarP(&model, "model", "m", "", "The pattern model. If multiple choices separate by comma.")
 	flag.StringVarP(&rotate, "rotate", "r", "", "Rotation angle in degree. Value format is '[value][~deviation]' or 'min:max'.")
 	flag.StringVarP(&scale, "scale", "s", "", "Scale factor. Value format is '[value][~deviation]' or 'min:max'.")
 	//parse the flags
@@ -114,60 +135,6 @@ func generatorFromParameters() svgpattern.Generator {
 	}
 	// seed the generator
 	g := svgpattern.New(flag.Arg(0))
-	// set the color
-	color = strings.TrimSpace(color)
-	if color == "no" {
-		g.Options(svgpattern.WithoutColor())
-	} else {
-		if color != "" {
-			g.Options(svgpattern.WithColor(color))
-		}
-		// set/randomize the hue ?
-		if hue != "" {
-			hv, hd, ok := parseValues(hue)
-			if ok {
-				if !math.IsNaN(hv) {
-					g.Options(svgpattern.WithHue(hv))
-				}
-				if !math.IsNaN(hd) && hd != 0 {
-					g.Options(svgpattern.RandomizeHue(hd))
-				}
-			} else {
-				log("Error parsing the hue parameter '%s'.\n", hue)
-				os.Exit(1)
-			}
-		}
-		// set/randomize the saturation ?
-		if saturation != "" {
-			sv, sd, ok := parseValues(saturation)
-			if ok {
-				if !math.IsNaN(sv) {
-					g.Options(svgpattern.WithSaturation(sv))
-				}
-				if !math.IsNaN(sd) && sd != 0 {
-					g.Options(svgpattern.RandomizeSaturation(sd))
-				}
-			} else {
-				log("Error parsing the saturation parameter '%s'.\n", saturation)
-				os.Exit(1)
-			}
-		}
-		// set/randomize the lightness ?
-		if lightness != "" {
-			lv, ld, ok := parseValues(lightness)
-			if ok {
-				if !math.IsNaN(lv) {
-					g.Options(svgpattern.WithLightness(lv))
-				}
-				if !math.IsNaN(ld) && ld != 0 {
-					g.Options(svgpattern.RandomizeLightness(ld))
-				}
-			} else {
-				log("Error parsing the lightness parameter '%s'.\n", lightness)
-				os.Exit(1)
-			}
-		}
-	}
 	// set the model
 	if model != "" {
 		set := strings.Split(model, ",")
@@ -176,34 +143,33 @@ func generatorFromParameters() svgpattern.Generator {
 		}
 		g.Options(svgpattern.WithModel(set...))
 	}
-	// set the rotation angle
-	if rotate != "" {
-		av, ad, ok := parseValues(rotate)
-		if ok {
-			if !math.IsNaN(av) {
-				g.Options(svgpattern.WithRotation(av))
-			}
-			if !math.IsNaN(ad) && ad != 0 {
-				g.Options(svgpattern.RandomizeRotation(ad))
-			}
+	// set the color + opacity
+	color = strings.TrimSpace(color)
+	if color != "" {
+		if color == "no" {
+			g.Options(svgpattern.WithoutColor())
 		} else {
-			log("Error parsing the rotation parameter '%s'.\n", rotate)
-			os.Exit(1)
+			g.Options(svgpattern.WithColor(color))
 		}
 	}
-	// set the scale factor
-	if scale != "" {
-		scv, scd, ok := parseValues(scale)
-		if ok {
-			if !math.IsNaN(scv) {
-				g.Options(svgpattern.WithScale(scv))
+	// set/randomize the hue, saturation, lightness, rotate and scale
+	for _, par := range []struct {
+		name, value string
+		with, rand  func(float64) svgpattern.Option
+	}{
+		{"hue", hue, svgpattern.WithHue, svgpattern.RandomizeHue},
+		{"saturation", saturation, svgpattern.WithSaturation, svgpattern.RandomizeSaturation},
+		{"lightness", lightness, svgpattern.WithLightness, svgpattern.RandomizeLightness},
+		{"rotate", rotate, svgpattern.WithRotation, svgpattern.RandomizeRotation},
+		{"scale", scale, svgpattern.WithScale, svgpattern.RandomizeScale},
+	} {
+		if par.value != "" {
+			o, ok := getOptions(par.value, par.with, par.rand)
+			if !ok {
+				log("Error parsing the %s parameter '%s'.\n", par.name, par.value)
+				os.Exit(1)
 			}
-			if !math.IsNaN(scd) && scd != 0 {
-				g.Options(svgpattern.RandomizeScale(scd))
-			}
-		} else {
-			log("Error parsing the rotation parameter '%s'.\n", scale)
-			os.Exit(1)
+			g.Options(o...)
 		}
 	}
 
