@@ -16,6 +16,17 @@ type Model struct {
 // Models is the list of all available models.
 var Models []Model
 
+// ModelsString provide the list of all available models as string.
+func ModelsString() string {
+	n := len(Models)
+	s := make([]string, n, n)
+	for i, m := range Models {
+		s[i] = m.Name
+	}
+
+	return strings.Join(s, ", ")
+}
+
 // GetModelIndex provides index in Models list of the desired model.
 // If the model is not found the ok is false and indes is -1
 func GetModelIndex(name string) (index int, ok bool) {

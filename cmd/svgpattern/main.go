@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/kpym/svgpattern"
+	"github.com/kpym/svgpattern/template/model"
 	flag "github.com/spf13/pflag"
 )
 
@@ -23,6 +24,7 @@ func help() {
 	fmt.Fprintf(out, "Usage: svgpattern 'phrase' [parapeters].\nThe available parameters are:\n\n")
 	flag.PrintDefaults()
 	fmt.Fprintf(out, "\n")
+	fmt.Fprintf(out, "The available pattern models are: %s\n\n", model.ModelsString())
 }
 
 // parseValues provide mean value and deviation from string
