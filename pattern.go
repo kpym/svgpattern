@@ -9,8 +9,10 @@ package svgpattern
 import (
 	"bytes"
 	"crypto/sha1"
+	"fmt"
 	"math"
 	"math/rand"
+	"strings"
 	"text/template"
 	"time"
 
@@ -47,8 +49,9 @@ type generator struct {
 	seed   int64
 	rand   *rand.Rand
 	// template model
-	name string
-	code *template.Template
+	models model.Models
+	name   string
+	code   *template.Template
 	// template parameters
 	color   colorful.Color
 	opacity float64
@@ -117,6 +120,8 @@ func (g *generator) Options(options ...Option) {
 func New(phrase string, options ...Option) Generator {
 	// create the pattern generator
 	g := new(generator)
+	// set the models to default
+	g.models = model.EmbededModels
 	// init the pattern generator
 	g.phraseSeed(phrase)
 	g.scale = 1
@@ -171,12 +176,16 @@ func (g *generator) phraseSeed(phrase string) {
 	g.setSeed(seed)
 }
 
-// setModel set the go-template used to produce the svg pattern.
-// This is a low level function : no validity check is provided here.
-// If the index is not in the desired range, the program will panic.
-// This function is the main relation with the packages model and tempfunc.
-func (g *generator) setModel(index int) {
-	m := model.Models[index]
+// randomModel pick a random model from all available models.
+func (g *generator) randomModel() {
+	numModels := len(g.models)
+	if numModels == 0 {
+		g.addError("Can't pick a model from empty list.")
+		return
+	}
+
+	index := g.rand.Intn(numModels)
+	m := g.models[index]
 	rf := tempfunc.RandomFunctions(g.seed)
 	uf := tempfunc.UtilFunctions()
 	code, err := template.New(m.Name).Funcs(rf).Funcs(uf).Parse(m.Code)
@@ -189,47 +198,26 @@ func (g *generator) setModel(index int) {
 	g.code = code
 }
 
-// randomModel pick a random model from all available models.
-func (g *generator) randomModel() {
-	g.setModel(g.rand.Intn(len(model.Models)))
-}
-
 // WithModel is a Generator option that select the model
 // from the list of 'valid' models.
 // If only one valid model name is provided, it is used.
 // If no such model is provided, then a random one is
 // chosen among all models.
 func WithModel(models ...string) Option {
-	if len(models) == 0 {
-		return func(g *generator) {
-			g.addError("Empty set of models. Use random model.")
-			g.randomModel()
-		}
-	}
-
-	var invalid string
-	valid := make([]int, 0, len(models))
-	for _, modelName := range models {
-		i, ok := model.GetModelIndex(modelName)
-		if ok {
-			valid = append(valid, i)
-		} else {
-			invalid += " " + modelName
-		}
-	}
-
-	if len(valid) == 0 {
-		return func(g *generator) {
-			g.addError("Invalid models:" + invalid + ". Use random models.")
-			g.randomModel()
-		}
-	}
-
 	return func(g *generator) {
-		g.setModel(valid[g.rand.Intn(len(valid))])
+		var invalid []string
+		g.models, invalid = g.models.SelectModels(models...)
 		if len(invalid) > 0 {
-			g.addError("Invalid models:" + invalid + ". Choose from the others.")
+			g.addError(fmt.Sprintf("The following %d models are invalid: %s.", len(invalid), strings.Join(invalid, ", ")))
 		}
+
+		if len(g.models) == 0 {
+			g.addError("Empty set of models. Use all builtin models.")
+			g.models = model.EmbededModels
+		}
+
+		g.randomModel()
+		return
 	}
 }
 

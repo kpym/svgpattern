@@ -24,7 +24,7 @@ func help() {
 	fmt.Fprintf(out, "Usage: svgpattern 'phrase' [parapeters].\nThe available parameters are:\n\n")
 	flag.PrintDefaults()
 	fmt.Fprintf(out, "\n")
-	fmt.Fprintf(out, "The available pattern models are: %s\n\n", model.ModelsString())
+	fmt.Fprintf(out, "The available pattern models are: %s\n\n", model.EmbededModels.ModelsString())
 }
 
 // parseValues provide mean value and deviation from string

@@ -100,15 +100,19 @@ func TestPhraseSeed(t *testing.T) {
 	}
 }
 
-func TestWithModel(t *testing.T) {
-	modelName := model.Models[rand.Intn(len(model.Models))].Name
+func TestWithOneModel(t *testing.T) {
+	modelName := model.EmbededModels[rand.Intn(len(model.EmbededModels))].Name
 	g := New("", WithModel(modelName)).(*generator)
 	// check the name
 	if g.name != modelName {
 		t.Errorf("The model is not set as desired, want: %s, got: %s", modelName, g.name)
 	}
-	all := make([]string, len(model.Models))
-	for i, m := range model.Models {
+}
+
+func TestWithAllModels(t *testing.T) {
+	g := New("").(*generator)
+	all := make([]string, len(model.EmbededModels))
+	for i, m := range model.EmbededModels {
 		all[i] = m.Name
 	}
 	g.Options(WithModel(all...))

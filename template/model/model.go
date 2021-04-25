@@ -13,14 +13,17 @@ type Model struct {
 	Code string
 }
 
-// Models is the list of all available models.
-var Models []Model
+// Models is just a list of models.
+type Models []Model
+
+// EmbededModels is the list of all available models.
+var EmbededModels Models
 
 // ModelsString provide the list of all available models as string.
-func ModelsString() string {
-	n := len(Models)
+func (models Models) ModelsString() string {
+	n := len(models)
 	s := make([]string, n, n)
-	for i, m := range Models {
+	for i, m := range models {
 		s[i] = m.Name
 	}
 
@@ -29,8 +32,8 @@ func ModelsString() string {
 
 // GetModelIndex provides index in Models list of the desired model.
 // If the model is not found the ok is false and indes is -1
-func GetModelIndex(name string) (index int, ok bool) {
-	for i, m := range Models {
+func (models Models) GetModelIndex(name string) (index int, ok bool) {
+	for i, m := range models {
 		if m.Name == name {
 			return i, true
 		}
@@ -39,13 +42,28 @@ func GetModelIndex(name string) (index int, ok bool) {
 	return -1, false
 }
 
+// GetModelIndex provides index in Models list of the desired model.
+// If the model is not found the ok is false and indes is -1
+func (models Models) SelectModels(names ...string) (newModels Models, invalid []string) {
+	for _, name := range names {
+		i, ok := models.GetModelIndex(name)
+		if ok {
+			newModels = append(newModels, models[i])
+		} else {
+			invalid = append(invalid, name)
+		}
+	}
+
+	return
+}
+
 // SetModel append or replace an existing model.
-func SetModel(name string, code string) {
-	i, ok := GetModelIndex(name)
+func (models *Models) SetModel(name string, code string) {
+	i, ok := models.GetModelIndex(name)
 	if ok {
-		Models[i].Code = code
+		(*models)[i].Code = code
 	} else {
-		Models = append(Models, Model{name, code})
+		*models = append(*models, Model{name, code})
 	}
 }
 
@@ -61,6 +79,6 @@ func init() {
 		fdata, _ := fs.ReadFile(svgdir, fname)
 		name := strings.TrimSuffix(fname, ".template.svg")
 		code := string(fdata)
-		SetModel(name, code)
+		EmbededModels.SetModel(name, code)
 	}
 }
