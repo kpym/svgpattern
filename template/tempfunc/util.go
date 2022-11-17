@@ -1,6 +1,5 @@
 // Package tempfunc provide template functions.
 // The description is in random.go.
-
 package tempfunc
 
 import (

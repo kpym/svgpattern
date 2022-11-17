@@ -101,7 +101,7 @@ func TestPhraseSeed(t *testing.T) {
 }
 
 func TestWithOneModel(t *testing.T) {
-	modelName := model.EmbededModels[rand.Intn(len(model.EmbededModels))].Name
+	modelName := model.EmbeddedModels[rand.Intn(len(model.EmbeddedModels))].Name
 	g := New("", WithModel(modelName)).(*generator)
 	// check the name
 	if g.name != modelName {
@@ -111,8 +111,8 @@ func TestWithOneModel(t *testing.T) {
 
 func TestWithAllModels(t *testing.T) {
 	g := New("").(*generator)
-	all := make([]string, len(model.EmbededModels))
-	for i, m := range model.EmbededModels {
+	all := make([]string, len(model.EmbeddedModels))
+	for i, m := range model.EmbeddedModels {
 		all[i] = m.Name
 	}
 	g.Options(WithModel(all...))

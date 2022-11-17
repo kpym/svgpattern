@@ -16,8 +16,8 @@ type Model struct {
 // Models is just a list of models.
 type Models []Model
 
-// EmbededModels is the list of all available models.
-var EmbededModels Models
+// EmbeddedModels is the list of all available models.
+var EmbeddedModels Models
 
 // ModelsString provide the list of all available models as string.
 func (models Models) ModelsString() string {
@@ -42,8 +42,8 @@ func (models Models) GetModelIndex(name string) (index int, ok bool) {
 	return -1, false
 }
 
-// GetModelIndex provides index in Models list of the desired model.
-// If the model is not found the ok is false and indes is -1
+// SelectModels provides a list of models from the given list of names.
+// If a name is not found in the list of available models it is added to the invalid list.
 func (models Models) SelectModels(names ...string) (newModels Models, invalid []string) {
 	for _, name := range names {
 		i, ok := models.GetModelIndex(name)
@@ -70,7 +70,7 @@ func (models *Models) SetModel(name string, code string) {
 //go:embed svgmodels/*.template.svg
 var files embed.FS
 
-// Init the Models list with the embeded svg templates.
+// Init the Models list with the embedded svg templates.
 func init() {
 	svgdir, _ := fs.Sub(files, "svgmodels")
 	svgmodels, _ := fs.ReadDir(svgdir, ".")
@@ -79,6 +79,6 @@ func init() {
 		fdata, _ := fs.ReadFile(svgdir, fname)
 		name := strings.TrimSuffix(fname, ".template.svg")
 		code := string(fdata)
-		EmbededModels.SetModel(name, code)
+		EmbeddedModels.SetModel(name, code)
 	}
 }

@@ -24,21 +24,21 @@ import (
 // A generator is the internal implementation of Generator interface.
 // A generator is a context for the Generate function.
 //
-// Random generator
+// # Random generator
 //
 // A phrase is converted to sha1 hash, from which an int64 is constructed.
 // this integer is used to seed a random generator.
 //
-// Template model
+// # Template model
 //
-// The template models are go-templates available in the module package
+// # The template models are go-templates available in the module package
 //
-// Template parameters
+// # Template parameters
 //
 // These parameters are (transformed and) passed to the template to generate
 // the pattern. They are randomly selected if not determined by an option.
 //
-// Errors
+// # Errors
 //
 // No go errors are generated during the process.
 // Only messages are saved in the errors field.
@@ -121,7 +121,7 @@ func New(phrase string, options ...Option) Generator {
 	// create the pattern generator
 	g := new(generator)
 	// set the models to default
-	g.models = model.EmbededModels
+	g.models = model.EmbeddedModels
 	// init the pattern generator
 	g.phraseSeed(phrase)
 	g.scale = 1
@@ -213,7 +213,7 @@ func WithModel(models ...string) Option {
 
 		if len(g.models) == 0 {
 			g.addError("Empty set of models. Use all builtin models.")
-			g.models = model.EmbededModels
+			g.models = model.EmbeddedModels
 		}
 
 		g.randomModel()
