@@ -68,6 +68,7 @@ type Generator interface {
 	Options(...Option)
 	Generate() (svg []byte, ok bool)
 	Errors() []string
+	Color() string
 }
 
 // Errors provide the error messages generated during the initialization/generation process.
@@ -104,6 +105,11 @@ func (g *generator) Generate() (svg []byte, ok bool) {
 	}
 
 	return result.Bytes(), len(g.errors) == 0
+}
+
+// Color returns the color used to generate the pattern as hex string.
+func (g *generator) Color() string {
+	return g.color.Hex()
 }
 
 // An Option is a function that customize the Generator.

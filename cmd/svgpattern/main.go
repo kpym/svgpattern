@@ -17,6 +17,9 @@ import (
 // quelques variables globales
 var version = "dev"
 
+// onlycolor is a flag to only output the color
+var onlycolor bool
+
 // Aide affiche l'aide d'utilisation
 func help() {
 	var out = os.Stderr
@@ -118,6 +121,7 @@ func generatorFromParameters() svgpattern.Generator {
 	flag.StringVarP(&lightness, "lightness", "l", "", "The lightness variation (using HSL colors). Value format is '[value][~deviation]' or 'min:max'.")
 	flag.StringVarP(&rotate, "rotate", "r", "", "Rotation angle in degree. Value format is '[value][~deviation]' or 'min:max'.")
 	flag.StringVarP(&scale, "scale", "s", "", "Scale factor. Value format is '[value][~deviation]' or 'min:max'.")
+	flag.BoolVar(&onlycolor, "onlycolor", false, "Only output the color.")
 	//parse the flags
 	flag.Parse()
 	// chack if parameters were provided
@@ -185,6 +189,10 @@ func log(format string, a ...interface{}) (n int, err error) {
 // Prints pattern's SVG string with a specific background color
 func main() {
 	g := generatorFromParameters()
+	if onlycolor {
+		fmt.Println(g.Color())
+		return
+	}
 	svg, ok := g.Generate()
 	if !ok {
 		log("There are some errors : %v", g.Errors())
